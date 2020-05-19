@@ -1,0 +1,83 @@
+    <body id="body_tag">
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script src="http://d3js.org/topojson.v1.min.js"></script>
+        <script src="static/d3-tip.js"></script>
+<!--        <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>-->
+        <div class="row">
+            <div class="col">ndjcnjsn</div>
+        </div>
+        <div class="container-fluid" style = "height: 100%; width: 100%;">
+            <div class="row" style="height: 50%">
+              <div class="col-6" id="world_map">
+                  <div id='dropdownbar'></div>
+                  <script>
+
+                  </script>
+              </div>
+              <div class="col-6" id="pc"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm" id="line_plot"></div>
+                <div class="col-sm" id="my_dataviz" style="left: 15%;"></div>
+                <div class="col-sm" id="barchart">
+                </div>
+              </div>
+        </div>
+
+        <script src="static/map.js"></script>
+        <script src="static/pie-chart.js"></script>
+        <script src="static/parallelcoordinate.js"></script>
+        <script src="static/lineplot.js"></script>
+        <script src="static/barchart.js"></script>
+        <script>
+
+            function ajax_fx(url, div){
+
+                $.ajax({url: url, success: function(result){
+                        $("#body_tag").html(result);
+                }});
+              }
+
+            console.log("hello")
+            var mockdata = {{ mockdata | safe }}
+            var world = {{ worldJSON | safe }}
+            var piechartdata = {{ piechartdata | safe }}
+            var parallelcoordinates = {{ parallelcoordinates | safe }}
+            var lineplotdata = {{ lineplotdata | safe }}
+            var barchartdata = {{ barchartdata | safe }}
+            var columns = {{ columns | safe }}
+            console.log(mockdata)
+            console.log(world)
+
+            processWorldD(world, mockdata)
+            renderPieChart(piechartdata)
+            parallel_coordinates(parallelcoordinates)
+            lineplot(lineplotdata)
+            barchart(barchartdata)
+
+<!--            columns = ["Confirmed", "Deaths", "Active"]-->
+
+            d3.select("#dropdownbar")
+                    .append("select")
+                    .selectAll("option")
+                    .data(columns)
+                    .enter()
+                    .append("option")
+                    .attr("value", function(d){
+                        return d;
+                    })
+                    .text(function(d){
+                        return d;
+                    })
+
+            d3.select("#dropdownbar").on('change', function(){
+                var selectedColumn = d3.select(this)
+                    .select("select")
+                    .property("value");
+<!--                            updateView(selectedColumn);-->
+                    ajax_fx("http://127.0.0.1:5000/updatemap?selected_column="+selectedColumn+"#world_map")
+            });
+
+        </script>
+
+    </body>

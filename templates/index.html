@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+        <meta charset="utf-8">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="static/parallel-coordinates.css">
+        <style>
+            /* CSS goes here. */
+            .subunit {
+                fill: none;
+                stroke: #FFF;
+                stroke-width: 1px;
+            }
+            text.subunit-label {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 14px;
+                font-weight: 300;
+                text-anchor: middle;
+                fill: #000;
+            }
+            .subunit-label {
+                display: none;
+            }
+            .graticule {
+                fill: none;
+                stroke: #aaa;
+                stroke-opacity: .5;
+                stroke-width: .5px;
+            }
+            .container {
+                /* float: left; */
+                height: 45%;
+                width: 50%;
+            }
+            .pie-chart {
+                float: bottom;
+            }
+            .d3-tip.n:after {
+              margin: -2px 0 0 0;
+              top: 100%;
+              left: 0;
+            }
+            .d3-tip {
+              line-height: 1;
+              padding: 6px;
+              background: rgba(0, 0, 0, 0.8);
+              color: #fff;
+              border-radius: 4px;
+              font-size: 12px;
+            }
+            /* Creates a small triangle extender for the tooltip */
+            .d3-tip:after {
+              box-sizing: border-box;
+              display: inline;
+              font-size: 10px;
+              width: 100%;
+              line-height: 1;
+              color: rgba(0, 0, 0, 0.8);
+              content: "\25BC";
+              position: absolute;
+              text-align: center;
+            }
+            .line {
+              fill: none;
+              stroke: steelblue;
+              stroke-width: 2px;
+            }
+            .bar { fill: steelblue; }
+        </style>
+    </head>
+    <body id="body_tag">
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script src="http://d3js.org/topojson.v1.min.js"></script>
+        <script src="static/d3-tip.js"></script>
+<!--        <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>-->
+        <div class="row">
+            <div class="col">ndjcnjsn</div>
+        </div>
+        <div class="container-fluid" style = "height: 100%; width: 100%;">
+            <div class="row" style="height: 50%">
+              <div class="col-6" id="world_map">
+                  <div id='dropdownbar'></div>
+                  <script>
+
+                  </script>
+              </div>
+              <div class="col-6" id="pc"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm" id="line_plot"></div>
+                <div class="col-sm" id="my_dataviz" style="left: 15%;"></div>
+                <div class="col-sm" id="barchart">
+                </div>
+              </div>
+        </div>
+        
+        <script src="static/map.js"></script>
+        <script src="static/pie-chart.js"></script>
+        <script src="static/parallelcoordinate.js"></script>
+        <script src="static/lineplot.js"></script>
+        <script src="static/barchart.js"></script>
+        <script>
+
+            function ajax_fx(url, div){
+
+                $.ajax({url: url, success: function(result){
+                        $("#body_tag").html(result);
+                }});
+              }
+
+            console.log("hello")
+            var mockdata = {{ mockdata | safe }}
+            var world = {{ worldJSON | safe }}
+            var piechartdata = {{ piechartdata | safe }}
+            var parallelcoordinates = {{ parallelcoordinates | safe }}
+            var lineplotdata = {{ lineplotdata | safe }}
+            var barchartdata = {{ barchartdata | safe }}
+            var columns = {{ columns | safe }}
+            console.log(mockdata)
+            console.log(world)
+
+            processWorldD(world, mockdata)
+            renderPieChart(piechartdata)
+            parallel_coordinates(parallelcoordinates)
+            lineplot(lineplotdata)
+            barchart(barchartdata)
+
+<!--            columns = ["Confirmed", "Deaths", "Active"]-->
+
+            d3.select("#dropdownbar")
+                    .append("select")
+                    .selectAll("option")
+                    .data(columns)
+                    .enter()
+                    .append("option")
+                    .attr("value", function(d){
+                        return d;
+                    })
+                    .text(function(d){
+                        return d;
+                    })
+
+            d3.select("#dropdownbar").on('change', function(){
+                var selectedColumn = d3.select(this)
+                    .select("select")
+                    .property("value");
+<!--                            updateView(selectedColumn);-->
+                    ajax_fx("http://127.0.0.1:5000/updatemap?selected_column="+selectedColumn+"#world_map")
+            });
+
+        </script>
+        
+    </body>
+</html>

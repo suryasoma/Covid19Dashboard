@@ -1,0 +1,6 @@
+Age,Number of Deaths,Share of deaths,With underlying conditions,Without underlying conditions,Unknown if with underlying cond.,Share of deaths of unknown + w/o cond.
+0 - 17,9,0.06%,6,3,0,0.02%
+18 - 44,601,3.90%,476,17,108,0.80%
+45 - 64,3413,22.40%,2851,72,490,3.70%
+65 - 74,3788,24.90%,2801,5,982,6.50%
+75+,7419,48.70%,5236,2,2181,14.30%
